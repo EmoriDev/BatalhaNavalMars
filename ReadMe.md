@@ -2,6 +2,6 @@
 ## Commits
 
 Commit 10/12/2022 - iniciando Projeto
-- Adicionando print de inicialização
+- Adicionado print de inicialização
 - Verificação de opções de modo de jogar
 - Iniciado tabela grid
