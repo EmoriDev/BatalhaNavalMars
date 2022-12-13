@@ -1,5 +1,5 @@
 .data
-	welcome: .asciiz "Welcome to the Naval Battle, let´s start the game! \n"
+	welcome: .asciiz "Welcome to the Naval Battle, letÂ´s start the game! \n"
 	playerMode: .asciiz "Press 1 if you wanna play alone\nPress 2 if you wanna play with me (:\n"
 	
 	singlePlayerMode: .asciiz "Welcome to the SinglePlayer MODE\n"
@@ -8,7 +8,7 @@
 	line: .asciiz "\nDigite a linha: "
 	column: .asciiz "\nDigite a coluna: "
 	space: .asciiz " "
-	lineSpace: .asciiz "\n "
+	lineSpace: .asciiz "\n"
 	
 	myArrayLine: 
 		.align 2
@@ -43,12 +43,12 @@
 			li $v0, 4
 			la $a0, singlePlayerMode
 			syscall
-			j print_row_and_column
+			j print_row
 		playMultiplayer:
 			li $v0, 4
 			la $a0, MultiplayerPlayerMode
 			syscall
-			j print_row_and_column
+			j print_row
 
 	# fill the array with a sequence number of rows
 	li $t0, 0  # initialize a counter to 0
@@ -56,15 +56,23 @@
 	
 	
 	# Building the grid table
-	print_row_and_column:
+	print_row:
 		beq $t0, 40, exit   # if the counter equals 40, go to the exit
 		sw $t1, myArrayLine($t0)
 		add $t1, $t1, 1
 		add $t0, $t0, 4
-		j print_row_and_column
+		j print_row
+		
+	print_column:
+		beq $t2, 40, exit   # if the counter equals 40, go to the exit
+		sw $t2, myArrayColumn($t3)
+		add $t2, $t2, 1
+		add $t3, $t3, 4
+		j print_column
 		
 	exit:
 		move $t0, $zero
+		move $t3, $zero
 		print:
 			beq $t0, 40, outPrint
 	
@@ -82,8 +90,29 @@
 			j print
 			
 			syscall
+			
+			
 		
 		outPrint:
+		
+			printColumn1:
+				beq $t3, 40, outPrint
+	
+				li $v0, 1
+				lw $a0, myArrayLine($t3)
+				syscall
+			
+				li $v0, 4
+				la $a0, lineSpace
+				syscall
+			
+			
+				add $t3,$t3, 4
+			
+				j print
+			
+				syscall
+			
 			
 			
 			
