@@ -1,18 +1,24 @@
 
 .data
-            .align 4 # alinhamento de mem�ria
-         m1:         .asciiz "\nDigite um n�mero inteiro:\t"
+            .align 4 # alinhamento de memória
+         m1:         .asciiz "\nDigite um número inteiro:\t"
          m2:         .asciiz "\nM[linha][coluna]:\t"
-         m3:         .asciiz "\Digite o n�mero da linhan\t"
+         m3:         .asciiz "\Digite o número da linha\t"
          m4:         .asciiz "\nDigite o numero da coluna\t"
-         M:        .word 0:16    # inicializa todos os elementos da matriz com zero
-         tamanho:     .word 16    # tamanho da matriz         
+         
+         m5:         .asciiz "\nColocar Submarino\t\n"
+         m6:         .asciiz "\nnColocar Destroyer\t\n"
+         m7:         .asciiz "\nColocar Porta-Aviões\t\n"
+         m8:         .asciiz "\nColocar Encouraçado\t\n"
+         M:        .word 0:100    # inicializa todos os elementos da matriz com zero
+         tamanho:     .word 100    # tamanho da matriz         
  
 .text
     main:
+    	#barcos: id1:(submarino) qt3, id2:(destroyer) qt2, id3:(porta aviões) qt2, id4: (encouraçado) qt1
         # setando a pilha de chamada de procedimentos
         subu     $sp, $sp, 32     # o frame de pilha tenm 32 bytes
-        sw     $ra, 20($sp)     # salva o endere�o de retorno
+        sw     $ra, 20($sp)     # salva o endereço de retorno
         sw     $fp, 16($sp)     # salva o ponteiro do frame
         addiu     $sp, $sp, 28      # prepara o ponteiro do frame            
             
@@ -20,94 +26,363 @@
             jal matriz_imprime 
            
             # re-setando a pilha de chamada de procedimentos
-        lw     $ra, 20($sp)       # restaura o endere�o
+        lw     $ra, 20($sp)       # restaura o endereço
         lw     $fp, 16($sp)       # restaura o frame pointer
         addiu     $sp, $sp, 32       # remove do frame        
         j FIM                       # finaliza o programa        
  
 matriz_preenche:
-        # configura��es da pilha
-        subu  $sp, $sp, 32   # reserva o espa�o do frame ($sp)    
-        sw    $ra, 20($sp)   # salva o endere�o de retorno ($ra)    
+        # configurações da pilha
+        subu  $sp, $sp, 32   # reserva o espaço do frame ($sp)    
+        sw    $ra, 20($sp)   # salva o endereço de retorno ($ra)    
         sw    $fp, 16($sp)   # salva o frame pointer ($fp)    
         addiu $fp, $sp, 28   # prepara o frame pointer    
         sw    $a0, 0($fp)    # salva o argumento ($a0)    
  
-        li       $t0, 4       # $t0: n�mero de linhas
-        li       $t1, 4       # $t1: n�mero de colunas
+        li       $t0, 10       # $t0: número de linhas
+        li       $t1, 10       # $t1: número de colunas
         move     $s0, $zero   # $s0: contador da linha
         move     $s1, $zero   # $s1: contador da coluna
         move     $t2, $zero   # $t2: valor a ser lido/armazenado
         move	 $s3, $zero   # $s3: numero de chamadas do loop 
             
     popula_matriz:            
-        # Cada itera��o de loop armazenar� o valor de $t1 incrementado no pr�ximo elemento da matriz
-        # O deslocamento � calculado a cada itera��o: deslocamento = 4 * (linha * n�mero de colunas + coluna)
+        # Cada iteração de loop armazenará o valor de $t1 incrementado no próximo elemento da matriz
+        # O deslocamento é calculado a cada iteração: deslocamento = 4 * (linha * número de colunas + coluna)
         
-        # solicita que o usu�rio digite um n�mero inteiro
+        #SUBMARINO
+        li     $v0, 4        
+        la     $a0, m5   
+        syscall 
+        # incrementa o contador
+        addi     $t2, $t2, 1 
+        # solicita que o usuário digite um número da linha
         li     $v0, 4        
         la     $a0, m3    
         syscall                        
         li     $v0, 5        
         syscall            
         move     $s0, $v0
-        # solicita que o usu�rio digite um n�mero inteiro
+        # solicita que o usuário digite um número da coluna
         li     $v0, 4        
         la     $a0, m4       
         syscall                        
-        li     $v0, 5        
+        li     $v0, 5
         syscall            
         move     $s1, $v0
             
-        # calcula o endere�o correto do array
-        
+        # calcula o endereço correto do array
         mult     $s0, $t1    # $s2 = linha * numero de colunas 
-        mflo     $s2            # move o resultado da multiplica��o do registrador lo para $s2
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
         
-        # solicita que o usu�rio digite um n�mero inteiro
+        #SUBMARINO 2
         li     $v0, 4        
-        la     $a0, m1        
+        la     $a0, m5   
+        syscall 
+        # solicita que o usuário digite um número da linha
+        li     $v0, 4        
+        la     $a0, m3    
         syscall                        
         li     $v0, 5        
         syscall            
-        move     $t2, $v0        
-    
-        # armazena o valor digitado pelo usu�rio
-        sw    $t2, M($s2)         
+        move     $s0, $v0
+        # solicita que o usuário digite um número da coluna
+        li     $v0, 4        
+        la     $a0, m4       
+        syscall                        
+        li     $v0, 5
+        syscall            
+        move     $s1, $v0
             
-            # incrementa o contador
-            addi     $t2, $t2, 1 
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
         
-        # Controle de loop: 
-            addi    $s3, $s3, 1            # incrementa o contador de execucoes
-            bne     $s3, $t0, popula_matriz       # n�o � o fim da matriz ent�o LOOP
-            jr     $ra
+        #SUBMARINO 3
+        li     $v0, 4        
+        la     $a0, m5   
+        syscall 
+        # solicita que o usuário digite um número da linha
+        li     $v0, 4        
+        la     $a0, m3    
+        syscall                        
+        li     $v0, 5        
+        syscall            
+        move     $s0, $v0
+        # solicita que o usuário digite um número da coluna
+        li     $v0, 4        
+        la     $a0, m4       
+        syscall                        
+        li     $v0, 5
+        syscall            
+        move     $s1, $v0
+            
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
         
-    # configura��es do procedimento    
+        #DESTROYER 1
+        li     $v0, 4        
+        la     $a0, m6
+        syscall 
+        # incrementa o contador
+        addi     $t2, $t2, 1 
+        # solicita que o usuário digite um número da linha
+        li     $v0, 4        
+        la     $a0, m3    
+        syscall                        
+        li     $v0, 5        
+        syscall            
+        move     $s0, $v0
+        # solicita que o usuário digite um número da coluna
+        li     $v0, 4        
+        la     $a0, m4       
+        syscall                        
+        li     $v0, 5
+        syscall            
+        move     $s1, $v0
+            
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+        #adiciona uma coluna
+        addi     $s1, $s1, 1
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+        #DESTROYER 2
+        li     $v0, 4        
+        la     $a0, m6
+        syscall 
+        # solicita que o usuário digite um número da linha
+        li     $v0, 4        
+        la     $a0, m3    
+        syscall                        
+        li     $v0, 5        
+        syscall            
+        move     $s0, $v0
+        # solicita que o usuário digite um número da coluna
+        li     $v0, 4        
+        la     $a0, m4       
+        syscall                        
+        li     $v0, 5
+        syscall            
+        move     $s1, $v0
+            
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+        #adiciona uma linha
+        addi     $s0, $s0, 1
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+        #PORTA-AVIÕES 1
+        li     $v0, 4        
+        la     $a0, m7
+        syscall 
+        # incrementa o contador
+        addi     $t2, $t2, 1 
+        # solicita que o usuário digite um número da linha
+        li     $v0, 4        
+        la     $a0, m3    
+        syscall                        
+        li     $v0, 5        
+        syscall            
+        move     $s0, $v0
+        # solicita que o usuário digite um número da coluna
+        li     $v0, 4        
+        la     $a0, m4       
+        syscall                        
+        li     $v0, 5
+        syscall            
+        move     $s1, $v0
+            
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+        #adiciona uma coluna
+        addi     $s1, $s1, 1
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        #adiciona uma coluna
+        addi     $s1, $s1, 1
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+        #PORTA-AVIÕES 2
+	li     $v0, 4        
+        la     $a0, m7
+        syscall 
+        # solicita que o usuário digite um número da linha
+        li     $v0, 4        
+        la     $a0, m3    
+        syscall                        
+        li     $v0, 5        
+        syscall            
+        move     $s0, $v0
+        # solicita que o usuário digite um número da coluna
+        li     $v0, 4        
+        la     $a0, m4       
+        syscall                        
+        li     $v0, 5
+        syscall            
+        move     $s1, $v0
+            
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+        #adiciona uma linha
+        addi     $s0, $s0, 1
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        #adiciona uma linha
+        addi     $s0, $s0, 1
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+        #ENCOURAÇADO
+        li     $v0, 4        
+        la     $a0, m8
+        syscall 
+        # incrementa o contador
+        addi     $t2, $t2, 1 
+        # solicita que o usuário digite um número da linha
+        li     $v0, 4        
+        la     $a0, m3    
+        syscall                        
+        li     $v0, 5        
+        syscall            
+        move     $s0, $v0
+        # solicita que o usuário digite um número da coluna
+        li     $v0, 4        
+        la     $a0, m4       
+        syscall                        
+        li     $v0, 5
+        syscall            
+        move     $s1, $v0
+            
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+        #adiciona uma coluna
+        addi     $s1, $s1, 1
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        #adiciona uma coluna
+        addi     $s1, $s1, 1
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        #adiciona uma coluna
+        addi     $s1, $s1, 1
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
+        # armazena o valor digitado pelo usuário
+        sw    $t2, M($s2)
+        
+    # configurações do procedimento    
     add     $v0, $s1, $zero # retorna para quem chamou    
     jr     $ra    
     
 matriz_imprime:
  
-    # configura��es da pilha
-    subu  $sp, $sp, 32   # reserva o espa�o do frame ($sp)    
-    sw    $ra, 20($sp)   # salva o endere�o de retorno ($ra)    
+    # configurações da pilha
+    subu  $sp, $sp, 32   # reserva o espaço do frame ($sp)    
+    sw    $ra, 20($sp)   # salva o endereço de retorno ($ra)    
     sw    $fp, 16($sp)   # salva o frame pointer ($fp)    
     addiu $fp, $sp, 28   # prepara o frame pointer    
     sw    $a0, 0($fp)    # salva o argumento ($a0)    
  
-    li       $t0, 4       # $t0: n�mero de linhas
-           li       $t1, 4       # $t1: n�mero de colunas
-           move     $s0, $zero   # $s0: contador da linha
+    	li       $t0, 10       # $t0: número de linhas
+        li       $t1, 10       # $t1: número de colunas
+        move     $s0, $zero   # $s0: contador da linha
         move     $s1, $zero   # $s1: contador da coluna
         move     $t2, $zero   # $t2: valor a ser lido/armazenado
         
     imprime_matriz:    
-        # calcula o endere�o correto do array
+        # calcula o endereço correto do array
         mult     $s0, $t1    # $s2 = linha * numero de colunas 
-            mflo     $s2            # move o resultado da multiplica��o do registrador lo para $s2
+            mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
             add      $s2, $s2, $s1  # $s2 += contador de coluna
             sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte    
     
@@ -132,7 +407,7 @@ matriz_imprime:
         bne      $s0, $t0, imprime_matriz      # not at end of matrix so loop back
         jr $ra
         
-       # configura��es do procedimento    
+       # configurações do procedimento    
     add     $v0, $s1, $zero # retorna para quem chamou    
     jr     $ra
     
