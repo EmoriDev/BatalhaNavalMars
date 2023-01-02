@@ -3,14 +3,20 @@
             .align 4 # alinhamento de memória
          m1:         .asciiz "\nDigite um número inteiro:\t"
          m2:         .asciiz "\nM[linha][coluna]:\t"
-         m3:         .asciiz "\Digite o número da linha\t"
+         m3:         .asciiz "\nDigite o número da linha\t"
          m4:         .asciiz "\nDigite o numero da coluna\t"
          
          m5:         .asciiz "\nColocar Submarino\t\n"
-         m6:         .asciiz "\nnColocar Destroyer\t\n"
+         m6:         .asciiz "\nColocar Destroyer\t\n"
          m7:         .asciiz "\nColocar Porta-Aviões\t\n"
          m8:         .asciiz "\nColocar Encouraçado\t\n"
+         m9:	     .asciiz "\nVez do Jogador \t"
+         m10:	     .asciiz "\nDigite a posicao que será atacada\t\n"
+         m11:	     .asciiz "\nAlvo acertado!\t\n"
+         m12:	     .asciiz "\nNenhum alvo acertado!\t\n"
+         
          M:        .word 0:100    # inicializa todos os elementos da matriz com zero
+         M2:        .word 0:100    # inicializa todos os elementos da matriz com zero
          tamanho:     .word 100    # tamanho da matriz         
  
 .text
@@ -20,10 +26,29 @@
         subu     $sp, $sp, 32     # o frame de pilha tenm 32 bytes
         sw     $ra, 20($sp)     # salva o endereço de retorno
         sw     $fp, 16($sp)     # salva o ponteiro do frame
-        addiu     $sp, $sp, 28      # prepara o ponteiro do frame            
-            
-            jal matriz_preenche
-            jal matriz_imprime 
+        addiu     $sp, $sp, 28      # prepara o ponteiro do frame   
+        
+        move     $t7, $zero   # $s0: vez do jogador 0   
+        li     $v0, 4        
+        la     $a0, m9  
+        syscall 
+        li     $v0, 1        
+        move     $a0, $t7
+        syscall 
+        jal matriz_preenche
+        
+        jal matriz_imprime 
+        
+        add     $t7,$t7, 1   # $s0: vez do jogador 0   
+        li     $v0, 4        
+        la     $a0, m9  
+        syscall 
+        li     $v0, 1        
+        move     $a0, $t7
+        syscall 
+        jal matriz_preenche
+        
+        jal matriz_imprime 
            
             # re-setando a pilha de chamada de procedimentos
         lw     $ra, 20($sp)       # restaura o endereço
@@ -77,8 +102,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
-        
+        beq $t7, $zero ELSE
+        sw    $t2, M2($s2)
+        j EndIf
+ELSE:	sw    $t2, M($s2)
+EndIf:
         #SUBMARINO 2
         li     $v0, 4        
         la     $a0, m5   
@@ -104,7 +132,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE1
+        sw    $t2, M2($s2)
+        j EndIf1
+ELSE1:	sw    $t2, M($s2)
+EndIf1:
         
         #SUBMARINO 3
         li     $v0, 4        
@@ -131,7 +163,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE2
+        sw    $t2, M2($s2)
+        j EndIf2
+ELSE2:	sw    $t2, M($s2)
+EndIf2:
         
         #DESTROYER 1
         li     $v0, 4        
@@ -160,7 +196,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE3
+        sw    $t2, M2($s2)
+        j EndIf3
+ELSE3:	sw    $t2, M($s2)
+EndIf3:
         
         #adiciona uma coluna
         addi     $s1, $s1, 1
@@ -170,7 +210,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE4
+        sw    $t2, M2($s2)
+        j EndIf4
+ELSE4:	sw    $t2, M($s2)
+EndIf4:
         
         #DESTROYER 2
         li     $v0, 4        
@@ -197,7 +241,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE5
+        sw    $t2, M2($s2)
+        j EndIf5
+ELSE5:	sw    $t2, M($s2)
+EndIf5:
         
         #adiciona uma linha
         addi     $s0, $s0, 1
@@ -207,7 +255,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE6
+        sw    $t2, M2($s2)
+        j EndIf6
+ELSE6:	sw    $t2, M($s2)
+EndIf6:
         
         #PORTA-AVIÕES 1
         li     $v0, 4        
@@ -236,7 +288,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE7
+        sw    $t2, M2($s2)
+        j EndIf7
+ELSE7:	sw    $t2, M($s2)
+EndIf7:
         
         #adiciona uma coluna
         addi     $s1, $s1, 1
@@ -246,7 +302,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE8
+        sw    $t2, M2($s2)
+        j EndIf8
+ELSE8:	sw    $t2, M($s2)
+EndIf8:
         #adiciona uma coluna
         addi     $s1, $s1, 1
         # calcula o endereço correto do array
@@ -255,7 +315,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE9
+        sw    $t2, M2($s2)
+        j EndIf9
+ELSE9:	sw    $t2, M($s2)
+EndIf9:
         
         #PORTA-AVIÕES 2
 	li     $v0, 4        
@@ -282,7 +346,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE10
+        sw    $t2, M2($s2)
+        j EndIf10
+ELSE10:	sw    $t2, M($s2)
+EndIf10:
         
         #adiciona uma linha
         addi     $s0, $s0, 1
@@ -292,7 +360,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE11
+        sw    $t2, M2($s2)
+        j EndIf11
+ELSE11:	sw    $t2, M($s2)
+EndIf11:
         #adiciona uma linha
         addi     $s0, $s0, 1
         # calcula o endereço correto do array
@@ -301,7 +373,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE12
+        sw    $t2, M2($s2)
+        j EndIf12
+ELSE12:	sw    $t2, M($s2)
+EndIf12:
         
         #ENCOURAÇADO
         li     $v0, 4        
@@ -330,7 +406,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte       
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE13
+        sw    $t2, M2($s2)
+        j EndIf13
+ELSE13:	sw    $t2, M($s2)
+EndIf13:
         
         #adiciona uma coluna
         addi     $s1, $s1, 1
@@ -340,7 +420,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE14
+        sw    $t2, M2($s2)
+        j EndIf14
+ELSE14:	sw    $t2, M($s2)
+EndIf14:
         #adiciona uma coluna
         addi     $s1, $s1, 1
         # calcula o endereço correto do array
@@ -349,7 +433,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE15
+        sw    $t2, M2($s2)
+        j EndIf15
+ELSE15:	sw    $t2, M($s2)
+EndIf15:
         #adiciona uma coluna
         addi     $s1, $s1, 1
         # calcula o endereço correto do array
@@ -358,7 +446,11 @@ matriz_preenche:
         add      $s2, $s2, $s1  # $s2 += contador de coluna
         sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte 
         # armazena o valor digitado pelo usuário
-        sw    $t2, M($s2)
+        beq $t7, $zero ELSE16
+        sw    $t2, M2($s2)
+        j EndIf16
+ELSE16:	sw    $t2, M($s2)
+EndIf16:
         
     # configurações do procedimento    
     add     $v0, $s1, $zero # retorna para quem chamou    
@@ -387,8 +479,12 @@ matriz_imprime:
             sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte    
     
         # obtem o valor do elemento armazenado
-        lw    $t2, M($s2)         
-    
+        beq $t7, $zero ELSE17
+        lw    $t2, M2($s2)
+        j EndIf17
+ELSE17:	lw    $t2, M($s2)
+EndIf17:
+
         # imprime no console o valor do elemento da matriz
         li     $v0, 4   
         la     $a0, m2
@@ -410,7 +506,60 @@ matriz_imprime:
        # configurações do procedimento    
     add     $v0, $s1, $zero # retorna para quem chamou    
     jr     $ra
-    
+
+atacar_posicao:
+	li     $v0, 4        
+        la     $a0, m10
+        syscall
+        # solicita que o usuário digite um número da linha
+        li     $v0, 4        
+        la     $a0, m3    
+        syscall                        
+        li     $v0, 5        
+        syscall            
+        move     $s0, $v0
+        # solicita que o usuário digite um número da coluna
+        li     $v0, 4        
+        la     $a0, m4       
+        syscall                        
+        li     $v0, 5
+        syscall            
+        move     $s1, $v0
+        
+        # calcula o endereço correto do array
+        mult     $s0, $t1    # $s2 = linha * numero de colunas 
+        mflo     $s2            # move o resultado da multiplicação do registrador lo para $s2
+        add      $s2, $s2, $s1  # $s2 += contador de coluna
+        sll      $s2, $s2, 2    # $s2 *= 4 (deslocamento 2 bits para a esquerda) para deslocamento de byte
+        
+          
+        # ataca a posição selecionada
+        beq $t7, $zero ELSE18
+        	beq M2($s2), $zero ELSE19
+        	sw    $zero, M2($s2)
+        	li     $v0, 4        
+        	la     $a0, m11
+        	syscall
+        	j EndIf19
+	ELSE19:	li     $v0, 4        
+        	la     $a0, m12
+        	syscall
+	EndIf19:
+        j EndIf18
+ELSE18:	
+		beq M($s2), $zero ELSE20
+        	sw    $zero, M($s2)
+        	li     $v0, 4        
+        	la     $a0, m11
+        	syscall
+        	j EndIf20
+	ELSE20:	li     $v0, 4        
+        	la     $a0, m12
+        	syscall
+	EndIf20:
+EndIf18:
+	add     $v0, $s1, $zero # retorna para quem chamou    
+    	jr     $ra
 FIM: 
         li $v0, 10        
         syscall 
