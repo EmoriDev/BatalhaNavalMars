@@ -124,6 +124,7 @@
         		
             		jal matriz_preenche
             		jal print_jogo
+            		jal matriz_imprime
             		
             		add     $t7,$t7, 1   # $s0: vez do jogador 0   
         		li     $v0, 4        
@@ -135,6 +136,7 @@
         		
         		jal matriz_preenche
             		jal print_jogo
+            		jal matriz_imprime
             		
             		jal atacar 
             		jal verificar
