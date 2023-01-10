@@ -83,15 +83,15 @@
 				
 				
 	playAloneStart:
-        # Fun��o singlePlayerFill
-        # Fun��o matriz_imprime
-        # Fun��o imprime_matriz
+        # Função singlePlayerFill
+        # Função matriz_imprime
+        # Função imprime_matriz
         singlePlayerFill:
 					#barcos: id1:(submarino) qt3,
-					# id2:(destroyer) qt2, id3:(porta aviões) qt2, id4: (encouraçado) qt1
+					# id2:(destroyer) qt2, id3:(porta aviÃµes) qt2, id4: (encouraÃ§ado) qt1
        			 	# setando a pilha de chamada de procedimentos
         		subu     $sp, $sp, 32   # o frame de pilha tenm 32 bytes
-       			sw     $ra, 20($sp)     # salva o endere�o de retorno
+       			sw     $ra, 20($sp)     # salva o endereço de retorno
         		sw     $fp, 16($sp)     # salva o ponteiro do frame
         		addiu     $sp, $sp, 28  # prepara o ponteiro do frame            
             		
@@ -123,15 +123,15 @@
             		jal verificar
            
             		# re-setando a pilha de chamada de procedimentos
-        		lw     $ra, 20($sp)       # restaura o endereço
+        		lw     $ra, 20($sp)       # restaura o endereÃ§o
         		lw     $fp, 16($sp)       # restaura o frame pointer
         		addiu     $sp, $sp, 32       # remove do frame        
         		j FIM   
 			
 			preenche_matrix:
-									 # configura��es da pilha
-				subu  $sp, $sp, 32   # reserva o espa�o do frame ($sp)    
-				sw    $ra, 20($sp)   # salva o endere�o de retorno ($ra)    
+									 # configurações da pilha
+				subu  $sp, $sp, 32   # reserva o espaço do frame ($sp)    
+				sw    $ra, 20($sp)   # salva o endereço de retorno ($ra)    
 				sw    $fp, 16($sp)   # salva o frame pointer ($fp)    
 				addiu $fp, $sp, 28   # prepara o frame pointer    
 				sw    $a0, 0($fp)    # salva o argumento ($a0)    
@@ -144,8 +144,8 @@
 				move	 $s3, $zero  # $s3: numero de chamadas do loop 
 					
 			popular_matriz:            
-				# Cada itera��o de loop armazena o valor de $t1 incrementado no proximo elemento da matriz
-				# O deslocamento � calculado a cada itera��o: deslocamento = 4 * (linha * numero de colunas + coluna)
+				# Cada iteração de loop armazena o valor de $t1 incrementado no proximo elemento da matriz
+				# O deslocamento é calculado a cada iteração: deslocamento = 4 * (linha * numero de colunas + coluna)
 				
 				#SUBM2ARINO
 				li     $v0, 4        
@@ -452,7 +452,7 @@
 			ELSE13:	sw    $t2, M($s2)
 			EndIf13:
 				
-				#ENCOURAÃ‡ADO
+				#ENCOURAÃâ¡ADO
 				li     $v0, 4        
 				la     $a0, inserir_Encouracados
 				syscall 
@@ -525,7 +525,7 @@
 			ELSE17:	sw    $t2, M($s2)
 			EndIf17:
 				
-				# configuraÃ§Ãµes do procedimento    
+				# configuraÃÂ§ÃÂµes do procedimento    
 				add     $v0, $s1, $zero # retorna para quem chamou    
 				jr     $ra
 				print_jogo:
@@ -583,8 +583,8 @@
 				exit_print_tabela:
 					jr $ra		
 		matriz_imprime:
-				# configuraÃ§Ãµes da pilha
-				subu  $sp, $sp, 32   # reserva o espaÃ§o do frame ($sp)    
+				# configuraÃÂ§ÃÂµes da pilha
+				subu  $sp, $sp, 32   # reserva o espaÃÂ§o do frame ($sp)    
 				sw    $ra, 20($sp)   # salva o endereco de retorno ($ra)    
 				sw    $fp, 16($sp)   # salva o frame pointer ($fp)    
 				addiu $fp, $sp, 28   # prepara o frame pointer    
@@ -632,7 +632,7 @@
 			move     $s1, $v0	
 			
 			verificar:   
-					# calcula o endere�o correto do array
+					# calcula o endereço correto do array
 					mult     $s0, $t1    # $s0 = linha * numero de colunas 
 					mflo     $s2            # move o resultado da multiplicacao do registrador lo para $s2
 					add      $s2, $s2, $s1  # $s2 += contador de coluna
